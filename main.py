@@ -22,6 +22,7 @@ tracked_regs = {
     'N990XB': "Boom XB-1",
     'N351SL': "Stratolaunch Roc",
     'N140SC': "L1011 Stargazer",
+    'N949SL': "Cosmic Girl",
 }
 
 # API things
@@ -132,7 +133,11 @@ def main() -> int:
             else:
                 # get groundspeed information
                 # tas and ias not available for all flights, but gs is
-                print(aircraft_info[0]['gs'])
+                try:
+                    print(aircraft_info[0]['gs'])
+                except KeyError:
+                    print(f'KeyError: gs not indexed on reg {reg}. Continuing.')
+                    continue
                 aircraft_airspeed = int(aircraft_info[0]['gs'])
 
                 # go to update() function and see if message needs to be sent
