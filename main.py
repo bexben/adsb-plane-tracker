@@ -117,13 +117,25 @@ def main() -> int:
             # API request for information
             reg = aircraft_object.reg
             url = f"https://adsbexchange-com1.p.rapidapi.com/v2/registration/{reg}/"
-            response = requests.get(url, headers=headers)
-
+            while True:
+                try:
+                    response = requests.get(url, headers=headers)
+                except:
+                    print('Failed to get API response. Trying again in 30 seconds')
+                    time.sleep(30)
+                else:
+                    break
             # parsing response for relevant info
                 # time of request
                 # whether or not its flying
             response_json = response.json()
-            aircraft_info = response_json['ac']
+            try:
+
+                aircraft_info = response_json['ac']
+            except KeyError:
+                print('Bad API response: ')
+                print(response)
+                print(response_json)
             aircraft_ping_time = int(response_json['now'])
 
             # aircraft transponder not active if 'ac' tag empty
