@@ -120,7 +120,8 @@ def main() -> int:
             while True:
                 try:
                     response = requests.get(url, headers=headers)
-                except:
+                    
+                except: 
                     print('Failed to get API response. Trying again in 30 seconds')
                     time.sleep(30)
                 else:
@@ -128,16 +129,14 @@ def main() -> int:
             # parsing response for relevant info
                 # time of request
                 # whether or not its flying
-            response_json = response.json()
             try:
-
+                response_json = response.json()
+                aircraft_ping_time = int(response_json['now'])
                 aircraft_info = response_json['ac']
             except KeyError:
                 print('Bad API response: ')
                 print(response)
                 print(response_json)
-            aircraft_ping_time = int(response_json['now'])
-
             # aircraft transponder not active if 'ac' tag empty
             if aircraft_info == []:
                 # aircraft transponder not active
