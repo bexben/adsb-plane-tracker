@@ -1,6 +1,7 @@
 import requests
 import configparser
 import time
+from datetime import datetime
 
 # Containing all secret non-publishable information
 config = configparser.ConfigParser()
@@ -101,19 +102,9 @@ def send_slack_msg(aircraft_object: object, state: int) -> int:
     # slack_response = requests.post(slack_post_url, data={"text": msg})
     print(msg)
 
-
-def main() -> int:
-    # initializing aircraft objects according to tracked_regs
-    aircraft_arr = []
-    for count, reg in enumerate(tracked_regs):
-        aircraft_arr.append(aircraft(reg=reg, bio=tracked_regs[reg]))
-        print(aircraft_arr[count].reg)
-
-    # run until forever
-    while True:
-        # go through each aircraft
+def loop(aircraft_arr):
+    # go through each aircraft
         for count, aircraft_object in enumerate(aircraft_arr):
-
             # API request for information
             reg = aircraft_object.reg
             url = f"https://adsbexchange-com1.p.rapidapi.com/v2/registration/{reg}/"
@@ -157,7 +148,24 @@ def main() -> int:
             # if state is non-zero, then slack message will be sent
             if state > 0:
                 send_slack_msg(aircraft_object, state)
-        
+
+
+def main() -> int:
+    # initializing aircraft objects according to tracked_regs
+    aircraft_arr = []
+    for count, reg in enumerate(tracked_regs):
+        aircraft_arr.append(aircraft(reg=reg, bio=tracked_regs[reg]))
+        print(aircraft_arr[count].reg)
+
+    # run until forever
+    while True:
+        # Get time
+        hour = datetime.now().hour
+        day = datetime.now().day
+        if 8 <= hour < 16:
+            if day < 5:
+                loop(aircraft_arr=aircraft_arr)
+
         # sleep for 5 mins to prevent going over API request limitations (10,000/mo)
         time.sleep(sleep_time)
     
