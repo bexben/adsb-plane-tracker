@@ -162,9 +162,10 @@ def main() -> int:
     while True:
         # Get time
         hour = datetime.now().hour
-        day = datetime.now().day
+        day = datetime.now().weekday()
         if 8 <= hour < 16:
             if day < 5:
+                print("Polling...")
                 loop(aircraft_arr=aircraft_arr)
 
         # sleep for 5 mins to prevent going over API request limitations (10,000/mo)
