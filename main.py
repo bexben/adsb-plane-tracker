@@ -60,7 +60,9 @@ class aircraft:
                 if self.taken_off_in_last_day == False:
                     # If it is, then send slack message: takeoff
                     self.taken_off_in_last_day = True
+                    self.pinged_in_last_day = True
                     self.first_takeoff_time = self.now
+                    self.first_ping_time = self.now
                     return 2
                 # Otherwise no need to send message
                 else:
@@ -113,14 +115,12 @@ def main() -> int:
     while True:
         # go through each aircraft
         for count, aircraft_object in enumerate(aircraft_arr):
-
             # API request for information
             reg = aircraft_object.reg
             url = f"https://adsbexchange-com1.p.rapidapi.com/v2/registration/{reg}/"
             while True:
                 try:
                     response = requests.get(url, headers=headers)
-                    
                 except: 
                     print('Failed to get API response. Trying again in 30 seconds')
                     time.sleep(30)
