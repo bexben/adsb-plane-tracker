@@ -129,22 +129,23 @@ def loop(aircraft_arr):
                 print('Bad API response: ')
                 print(response)
                 print(response_json)
-            # aircraft transponder not active if 'ac' tag empty
-            if aircraft_info == []:
-                # aircraft transponder not active
-                state = aircraft_object.update(transponder_state=False, now=aircraft_ping_time, airspeed=0)
+            # aircraft transponder not active if ac' tag empty
             else:
-                # get groundspeed information
-                # tas and ias not available for all flights, but gs is
-                try:
-                    print(aircraft_info[0]['gs'])
-                except KeyError:
-                    print(f'KeyError: gs not indexed on reg {reg}. Continuing.')
-                    continue
-                aircraft_airspeed = int(aircraft_info[0]['gs'])
+                if aircraft_info == []:
+                    # aircraft transponder not active
+                    state = aircraft_object.update(transponder_state=False, now=aircraft_ping_time, airspeed=0)
+                else:
+                    # get groundspeed information
+                    # tas and ias not available for all flights, but gs is
+                    try:
+                        print(aircraft_info[0]['gs'])
+                    except KeyError:
+                        print(f'KeyError: gs not indexed on reg {reg}. Continuing.')
+                        continue
+                    aircraft_airspeed = int(aircraft_info[0]['gs'])
 
-                # go to update() function and see if message needs to be sent
-                state = aircraft_object.update(transponder_state=True, now=aircraft_ping_time, airspeed=aircraft_airspeed)
+                    # go to update() function and see if message needs to be sent
+                    state = aircraft_object.update(transponder_state=True, now=aircraft_ping_time, airspeed=aircraft_airspeed)
             
             # if state is non-zero, then slack message will be sent
             if state > 0:
