@@ -19,7 +19,8 @@ ping_delta_time = 28800000
 
 # dict of all the aircraft to track. N-number must match aircraft, value is descriptor (or bio)
 tracked_regs = {
-    'N809NA': "NASA ER-2",
+    'N809NA': "NASA ER-2 #809",
+    'N806NA': "NASA ER-2 #806",
     'N990XB': "Boom XB-1",
     'N351SL': "Stratolaunch Roc",
     'N140SC': "L1011 Stargazer",
@@ -126,7 +127,7 @@ def loop(aircraft_arr):
                 aircraft_ping_time = int(response_json['now'])
                 aircraft_info = response_json['ac']
             except KeyError:
-                print('Bad API response: ')
+                print(f'Bad API response on {reg}: ')
                 print(response)
                 print(response_json)
             # aircraft transponder not active if ac' tag empty
@@ -138,7 +139,7 @@ def loop(aircraft_arr):
                     # get groundspeed information
                     # tas and ias not available for all flights, but gs is
                     try:
-                        print(aircraft_info[0]['gs'])
+                        print(str(aircraft_info[0]['gs']) + ' ' + reg)
                     except KeyError:
                         print(f'KeyError: gs not indexed on reg {reg}. Continuing.')
                         continue
@@ -164,9 +165,9 @@ def main() -> int:
         # Get time
         hour = datetime.now().hour
         day = datetime.now().weekday()
-        if 8 <= hour < 16:
+        if 7 <= hour < 16:
             if day < 5:
-                print("Polling...")
+                print(datetime.now())
                 loop(aircraft_arr=aircraft_arr)
 
         # sleep for 5 mins to prevent going over API request limitations (10,000/mo)
